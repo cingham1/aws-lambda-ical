@@ -1,0 +1,23 @@
+---
+name: airbnb
+url: https://www.airbnb.com/calendar/ical/20969688.ics?s=7501b52ee1b983729d38bd717b08b6c3
+removeRegex: \s*\([^\)]*\)\s*
+addPrefix: air
+---
+name: homeaway
+url: https://www.homeaway.com/icalendar/e45734e2ff0b405cb91f0783c020bc20.ics
+removeRegex: Reserved -
+addPrefix: hom
+---
+name: tripadvisor
+url: https://rentals.tripadvisor.com/calendar/ical/9194391.ics?s=v1118d58fbb89e5a561f3c71ad6e6a7971
+addPrefix: tri
+---
+name: tdh
+url: https://www.lodgify.com/6509b898-2117-41a9-a981-aa89438732ef.ics?strong-only=1&exclude=GenericICal
+addPrefix: tdh
+---
+name: misterbandb
+url: https://www.misterbandb.com/rooms/136318/ical_export.ics?it=iEB2ACOrSYwSmsWJYLqBiw
+addPrefix: mrb
+excludeEvents: Not available
