@@ -1,4 +1,4 @@
-package net.cingham.ical;
+package net.cingham.ical.service;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -6,6 +6,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
+
+import net.cingham.ical.domain.SiteInfo;
 
 
 /**

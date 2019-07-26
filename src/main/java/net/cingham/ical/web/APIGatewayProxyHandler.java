@@ -1,4 +1,4 @@
-package net.cingham.ical;
+package net.cingham.ical.web;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +14,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+
+import net.cingham.ical.service.ICalHostingRelay;
 
 /**
  * 

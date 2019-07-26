@@ -1,4 +1,4 @@
-package net.cingham.ical
+package net.cingham.ical.service
 
 import spock.lang.Specification
 import spock.lang.Subject
@@ -15,6 +15,9 @@ import biweekly.Biweekly
 import biweekly.ICalendar
 import biweekly.component.VEvent
 import biweekly.property.Summary
+import net.cingham.ical.service.ICalHostingRelay
+import net.cingham.ical.service.ICalLoader
+import net.cingham.ical.service.ICalRetrievalHandler
 
 
 class ICalHostingRelaySpec extends Specification {
@@ -23,7 +26,6 @@ class ICalHostingRelaySpec extends Specification {
     ICalHostingRelay icalHostingRelay;
 	
 	String sampleData;
-	Context context;
 	static final String TYPE_MISTERBANDB = "misterbandb"
 	
     def setup() {
@@ -33,17 +35,13 @@ class ICalHostingRelaySpec extends Specification {
 		
 		ICalLoader loader = Mock(ICalLoader)
 		loader.loadICalData(_) >> sampleData
-		ICalRetrievalHandler.icalLoader = loader
-		
-		context = Mock(Context);
-		LambdaLogger logger = Mock(LambdaLogger)
-		context.getLogger() >> logger
+		ICalRetrievalHandler.icalLoader = loader		
     }
 
     def "test loading and filtering 1 site"() {
         given:
         when:
-            String result = icalHostingRelay.getICalRelay(TYPE_MISTERBANDB, context)
+            String result = icalHostingRelay.getICalRelay(TYPE_MISTERBANDB)
         then:
 			StringUtils.countMatches(result, "Gregory") == 1
 			StringUtils.countMatches(result, "BEGIN:VEVENT") == 3
@@ -53,7 +51,7 @@ class ICalHostingRelaySpec extends Specification {
     def "test loading and filtering all sites"() {
         given:
         when:
-            String result = icalHostingRelay.getICalRelay(ICalHostingRelay.TYPE_ALL, context)
+            String result = icalHostingRelay.getICalRelay(ICalHostingRelay.TYPE_ALL)
         then:
 			StringUtils.countMatches(result, "Combined Calendars") == 1
 			StringUtils.countMatches(result, "Gregory") == 5
@@ -67,7 +65,7 @@ class ICalHostingRelaySpec extends Specification {
     def "test loading invalid site name"() {
         given:
         when:
-            String result = icalHostingRelay.getICalRelay("foo", context)
+            String result = icalHostingRelay.getICalRelay("foo")
         then:
 			thrown IllegalArgumentException
     }

@@ -1,4 +1,4 @@
-package net.cingham.ical;
+package net.cingham.ical.domain;
 
 
 /**

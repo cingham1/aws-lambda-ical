@@ -1,4 +1,4 @@
-package net.cingham.ical
+package net.cingham.ical.service
 
 import spock.lang.Specification
 import spock.lang.Subject
@@ -15,6 +15,9 @@ import biweekly.Biweekly
 import biweekly.ICalendar
 import biweekly.component.VEvent
 import biweekly.property.Summary
+import net.cingham.ical.domain.SiteInfo
+import net.cingham.ical.domain.SiteMap
+import net.cingham.ical.service.ICalLoader
 
 
 class ICalLoaderSpec extends Specification {

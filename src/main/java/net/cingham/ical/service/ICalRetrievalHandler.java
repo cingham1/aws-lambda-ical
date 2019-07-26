@@ -1,4 +1,4 @@
-package net.cingham.ical;
+package net.cingham.ical.service;
 
 import java.io.IOException;
 import java.util.ListIterator;
@@ -11,6 +11,7 @@ import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
 import biweekly.property.Summary;
+import net.cingham.ical.domain.SiteInfo;
 
 
 /**

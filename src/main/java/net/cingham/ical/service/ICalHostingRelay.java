@@ -1,9 +1,11 @@
-package net.cingham.ical;
+package net.cingham.ical.service;
 
 import biweekly.Biweekly;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
+import net.cingham.ical.domain.SiteInfo;
+import net.cingham.ical.domain.SiteMap;
 
 import java.io.IOException;
 import java.util.ArrayList;

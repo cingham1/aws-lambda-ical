@@ -1,4 +1,4 @@
-package net.cingham.ical
+package net.cingham.ical.web
 
 import spock.lang.Specification
 import spock.lang.Subject
@@ -16,6 +16,8 @@ import biweekly.Biweekly
 import biweekly.ICalendar
 import biweekly.component.VEvent
 import biweekly.property.Summary
+import net.cingham.ical.service.ICalHostingRelay
+import net.cingham.ical.web.APIGatewayProxyHandler
 
 
 class APIGatewayProxyHandlerSpec extends Specification {
@@ -45,7 +47,7 @@ class APIGatewayProxyHandlerSpec extends Specification {
 
     def "test loading valid site data"() {
         given:
-			iCalRelay.getICalRelay(_,_) >> testBody
+			iCalRelay.getICalRelay(_) >> testBody
         when:
             APIGatewayProxyResponseEvent response = 
 				apiGatewayProxyHandler.handleRequest(request, context)
@@ -57,7 +59,7 @@ class APIGatewayProxyHandlerSpec extends Specification {
 
 	def "test error with invalid type name"() {
 		given:
-			iCalRelay.getICalRelay(_,_) >> {throw new IllegalArgumentException ("my-error")}
+			iCalRelay.getICalRelay(_) >> {throw new IllegalArgumentException ("my-error")}
 		when:
 			APIGatewayProxyResponseEvent response =
 				apiGatewayProxyHandler.handleRequest(request, context)
@@ -70,7 +72,7 @@ class APIGatewayProxyHandlerSpec extends Specification {
 
 	def "test error with internal error"() {
 		given:
-			iCalRelay.getICalRelay(_,_) >> {throw new IOException ("my-error")}
+			iCalRelay.getICalRelay(_) >> {throw new IOException ("my-error")}
 		when:
 			APIGatewayProxyResponseEvent response =
 				apiGatewayProxyHandler.handleRequest(request, context)
