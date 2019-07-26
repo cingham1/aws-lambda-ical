@@ -3,13 +3,13 @@ ICal Hosting Relay for AWS Lambda
 
 ## Overview
 
-When listing a real estate property for Short Term Rental (STR) on multiple travel sites it is necessary to keep booking calendars in sync.  For example, when a guest books a property through AirBnb for Oct 20 - 25, the other booking sites with that property (HomeAway, TripAdvisor, etc) must then show those dates as unavailable to prevent double booking for those dates.
+When listing a real estate property for Short Term Rental (STR) on multiple travel sites it is necessary to keep booking calendars in sync.  For example, when a guest books a property through AirBnb for Oct 20 - 25, the other booking sites with that property (HomeAway, TripAdvisor, etc) must then show those dates as unavailable to prevent double booking.
 
 The standard way to keep bookings in sync is through shared calendars using the [ICal](https://en.wikipedia.org/wiki/ICalendar) format.  All booking sites  such as AirBnb, HomeAway, TripAdvisor, MisterBnb etc. provide an ICal feed which can then be linked to other booking sites.
 
 These ICal feeds can also be used by the property manager(s) to see which dates are booked by which guest and from which site they booked on.  These feeds can be imported as standard ICal events into any smartphone/PC calendar.
 
-**Problems:** 
+**Problems:**
 
 * Multiple ICal feeds are required to be added to a personal calendar (one for each site)
 * Each feed formats the information differently, for example:
@@ -29,7 +29,7 @@ This project is designed to be run as an [AWS Lambda](https://aws.amazon.com/lam
 
 An ICal client (such as the calendar app on your smartphone) periodically makes requests via a REST API URL for the latest booking data.  The request is routed to the Lambda function which then retrieves the data from the requested hosting site(s) and massages the data according to the rules designated for each site.  The rules are defined in the properties file ical-sites.yml.  The resulting ICal events are collated and returned to the client as an ICal mime-type.
 
-![Architecture Diagram](ical-architecture-diagram.jpg)
+![Architecture Diagram](https://raw.githubusercontent.com/cingham1/aws-lambda-ical/master/src/main/resources/ical-architecture-diagram.jpg)
 
 #### REST API
 The request URL can be for an individual site (such as AirBnb) or all defined sites collated into one response.  The examples below assume DNS (for ical.cingham.net) and API Gateway (for /hosting-relay/{type}) are setup.  The available {type} values are the sites listed in ical-sites.yml, or "all" to gather all of them.
