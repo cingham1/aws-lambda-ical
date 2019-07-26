@@ -86,19 +86,12 @@ public class ICalRetrievalHandler implements Callable<ICalendar> {
         		
         		String newValue = pattern.matcher(value).replaceAll("");
         		event.setSummary(newValue);
-        		
-/**        		
-        		if (StringUtils.startsWithIgnoreCase(value, prefix)) {
-        			String newValue = value.substring(prefix.length()).trim();
-        			event.setSummary(newValue);
-        		}
-**/
         	}
         }
 	}	
 
 	/**
-	 * Optionally add prefix to event summary (e.g. "air: Jeff Jones")
+	 * Optionally add prefix to event summary (e.g. "air - Jeff Jones")
 	 */
 	private void addPrefixToEvents(ICalendar ical, String prefix) {
         if (StringUtils.isEmpty(prefix)) {

@@ -1,86 +1,118 @@
 # aws-lambda-ical
 ICal Hosting Relay for AWS Lambda
 
-## Getting Started
+## Overview
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+When listing a real estate property for Short Term Rental (STR) on multiple travel sites it is necessary to keep booking calendars in sync.  For example, when a guest books a property through AirBnb for Oct 20 - 25, the other booking sites with that property (HomeAway, TripAdvisor, etc) must then show those dates as unavailable to prevent double booking for those dates.
 
-### Prerequisites
+The standard way to keep bookings in sync is through shared calendars using the [ICal](https://en.wikipedia.org/wiki/ICalendar) format.  All booking sites  such as AirBnb, HomeAway, TripAdvisor, MisterBnb etc. provide an ICal feed which can then be linked to other booking sites.
 
-What things you need to install the software and how to install them
+These ICal feeds can also be used by the property manager(s) to see which dates are booked by which guest and from which site they booked on.  These feeds can be imported as standard ICal events into any smartphone/PC calendar.
 
-```
-Give examples
-```
+**Problems:** 
 
-### Installing
+* Multiple ICal feeds are required to be added to a personal calendar (one for each site)
+* Each feed formats the information differently, for example:
+    * HomeAway prepends each guest name with "Reserved -" 
+    * AirBnb adds an unnecessary reservation ID
+    * MisterBnb sends duplicate 'Not Available' entries from external booked dates
+* It can be hard to distinguish at a glance which site a guest booked from
 
-A step by step series of examples that tell you how to get a development env running
+**Solution:**
 
-Say what the step will be
+Provide a REST API which will normalize the feed data from each site, and optionally retrieve data from all sites in one URL call.  It will also prepend the guest name with a short code to clearly indicate which site the guest booked from (e.g. "air - John Smith" was booked on AirBnb) 
 
-```
-Give the example
-```
 
-And repeat
+## Architecture
 
-```
-until finished
-```
+This project is designed to be run as an [AWS Lambda](https://aws.amazon.com/lambda/) function, using a REST API endpoint for data retrieval.  
 
-End with an example of getting some data out of the system or using it for a little demo
+An ICal client (such as the calendar app on your smartphone) periodically makes requests via a REST API URL for the latest booking data.  The request is routed to the Lambda function which then retrieves the data from the requested hosting site(s) and massages the data according to the rules designated for each site.  The rules are defined in the properties file ical-sites.yml.  The resulting ICal events are collated and returned to the client as an ICal mime-type.
 
-## Running the tests
+![Architecture Diagram](ical-architecture-diagram.jpg)
 
-Explain how to run the automated tests for this system
+#### REST API
+The request URL can be for an individual site (such as AirBnb) or all defined sites collated into one response.  The examples below assume DNS (for ical.cingham.net) and API Gateway (for /hosting-relay/{type}) are setup.  The available {type} values are the sites listed in ical-sites.yml, or "all" to gather all of them.
 
-### Break down into end to end tests
-
-Explain what these tests test and why
+Example URL for HomeAway data only
 
 ```
-Give an example
+HTTP GET:  https://ical.cingham.net/hosting-relay/homeaway
 ```
-
-### And coding style tests
-
-Explain what these tests test and why
+Example URL for all defined sites collated together
 
 ```
-Give an example
+HTTP GET:  https://ical.cingham.net/hosting-relay/all
 ```
 
-## Deployment
+**Success response:**
+* Status: HTTP 200 OK
+* Headers: 
+    * Content-Type: text/calendar; charset=utf-8
+    * Content-Disposition: inline; filename=hosting.ics
+* Body: `<data feed text file in ical format>`
 
-Add additional notes about how to deploy this on a live system
+**Error response:**
+* Status: HTTP 400 Bad Request  or  500 Internal Error
+* Headers: 
+    * Content-Type: application/problem+json
+* Body: `{ "status":<status code>, "message":<error description> }`
 
-## Built With
+## Build & Deploy
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+This project is built with Java 8 using Maven, and deployed onto Amazon AWS Lambda.
 
-## Contributing
+#### Running the tests
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Spock unit/integration tests may be run from an IDE or from the command line using the following:
+
+```
+mvn test
+```
+
+#### Build
+Use Mavan to build, run tests, and package for upload to AWS 
+
+```
+mvn clean package shade:shade
+```
+
+The enclosed shell script *buildit.sh* will do the same thing
+
+
+#### Deployment to AWS
+
+An AWS account is required.  From the AWS console do the following:
+
+* Create a Lambda function for Java 8 with a name such as "iCalHostingRelay" and upload the built .jar file
+* Create an API Gateway for a resource URI such as "/host-api/{type}", 
+* In the new API resource URI create a GET method and point it to the Lambda function defined above
+* Optionally use Route 53 for a custom domain for the final URL, and point it to the API Gateway url
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+* 1.0.2 - Added multi-threading to gather all ical sites concurrently
+* 1.0.1 - Added regex handling for naming text exclusions; added health URI
+* 1.0.0 - Initial version
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Charles Ingham** 
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+## References 
+
+* [ICal Format Overview](https://en.wikipedia.org/wiki/ICalendar) - wikipedia.org
+* [ICal Detailed Spec - RFC 2445](https://www.ietf.org/rfc/rfc2445.txt) - ietf.org
+
+#### Built With
+
+* [Eclipse](https://www.eclipse.org/) - IDE
+* [Maven](https://maven.apache.org/) - Dependency Management
+* [AWS Lambda](https://aws.amazon.com/lambda/) - Amazon Web Services - Lambda
+
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the Apache License V2.0 - see the [LICENSE](LICENSE) file for details
 
-## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc

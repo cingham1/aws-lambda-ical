@@ -5,6 +5,8 @@ package net.cingham.ical;
  * 
  * Entity to hold info for each ICal site, and how to massage the gathered data 
  *
+ * @author cingham
+ * 
  */
 public class SiteInfo {	
 	private String name;

@@ -10,7 +10,10 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * 
- * make REST call to get raw data (as string) from ICal server
+ * Make REST call to get raw data (as string) from an ICal server. 
+ * This is defined as a separate class to facilitate Mock retrieval in unit tests.
+ *
+ * @author cingham
  *
  */
 public class ICalLoader {

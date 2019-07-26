@@ -10,9 +10,13 @@ import biweekly.util.IOUtils;
 
 /***
  * 
- * Map object used to load the site data from a config file.  
+ * Map object used to load the site data from a config .yml file.  
  * For each site:  key=site name, value=full SiteInfo 
- *
+ * 
+ * Uses Snakeyaml library for loading, see: https://www.baeldung.com/java-snake-yaml
+ * 
+ * @author cingham
+ * 
  */
 public class SiteMap extends HashMap<String, SiteInfo> {
 	static final long serialVersionUID = 1l;

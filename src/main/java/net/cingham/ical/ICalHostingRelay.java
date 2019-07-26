@@ -1,8 +1,5 @@
 package net.cingham.ical;
 
-import com.amazonaws.services.lambda.runtime.Context; 
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-
 import biweekly.Biweekly;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -20,8 +17,10 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * 
- * Main entry point for tool to gather ICal data from multiple booking sites, 
+ * Service entry point for tool to gather ICal data from multiple booking sites, 
  * and optionally cleanup/normalize the data from each site.
+ * 
+ * Uses biweekly ICalendar library, see: https://github.com/mangstadt/biweekly
  * 
  * @author cingham
  *
@@ -40,10 +39,7 @@ public class ICalHostingRelay {
 		}
 	}
 	
-	public String getICalRelay(String type, Context context) throws IOException {
-        LambdaLogger logger = context.getLogger();
-        logger.log("received type : " + type);
-
+	public String getICalRelay(String type) throws IOException {
         ICalendar icalResults;
     	if (StringUtils.equals(type, TYPE_ALL)) {        		
     		icalResults = combineAllCalendars();
@@ -74,7 +70,7 @@ public class ICalHostingRelay {
 			for (SiteInfo site : siteMap.values()) {
 				siteNames.add(site.getName());
 	
-				// start the thread to retrieve this site data
+				// for each site, start the thread to retrieve its data
 				ICalRetrievalHandler handler = new ICalRetrievalHandler(site);
 				futures.add(service.submit(handler));		
 			}

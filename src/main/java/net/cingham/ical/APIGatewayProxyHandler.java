@@ -15,6 +15,17 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
+/**
+ * 
+ * Web entry point called from AWS API Gateway via Lambda.
+ * 
+ * See: 
+ * https://blog.knoldus.com/create-aws-lambda-with-ease/
+ * https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
+ * 
+ * @author cingham
+ *
+ */
 public class APIGatewayProxyHandler {
 
 	private static ICalHostingRelay iCalRelay = new ICalHostingRelay();
@@ -53,8 +64,9 @@ public class APIGatewayProxyHandler {
 				type = request.getPathParameters().get(TYPE_PATH_PARAM);
 			}
 			type = (type == null) ? "(unknown)" : type;
-
-			strResults = iCalRelay.getICalRelay(type, context);
+	        logger.log("received type : " + type);
+	        
+			strResults = iCalRelay.getICalRelay(type);
 
 		} catch (IllegalArgumentException iae) {
 			logger.log("** error : " + iae.getMessage());
