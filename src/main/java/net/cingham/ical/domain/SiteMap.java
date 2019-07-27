@@ -10,8 +10,8 @@ import biweekly.util.IOUtils;
 
 /***
  * 
- * Map object used to load the site data from a config .yml file.  
- * For each site:  key=site name, value=full SiteInfo 
+ * Map object used to load the site data from a config .yml file. 
+ * For each site:  key=site name, value=full SiteInfo
  * 
  * Uses Snakeyaml library for loading, see: https://www.baeldung.com/java-snake-yaml
  * 
@@ -20,10 +20,10 @@ import biweekly.util.IOUtils;
  */
 public class SiteMap extends HashMap<String, SiteInfo> {
 	static final long serialVersionUID = 1l;
-	
+
 	public SiteMap() {
 	}
-	
+
 	public void loadSiteData() {
 		Yaml yaml = new Yaml(new Constructor(SiteInfo.class));
 		InputStream inputStream = this.getClass().getResourceAsStream("/ical-sites.yml");

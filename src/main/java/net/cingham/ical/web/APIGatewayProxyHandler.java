@@ -35,15 +35,15 @@ public class APIGatewayProxyHandler {
 	public static final String BLANK_URI = "/";
 	public static final String HEALTH_URI = "/health";
 	public static final String TYPE_PATH_PARAM = "type";
-	
+
 	public static final String HEADER_CONTENT_TYPE = "Content-Type";
 	public static final String MIME_TYPE_CALENDAR = "text/calendar; charset=utf-8";
 	public static final String MIME_TYPE_PROBLEM_JSON = "application/problem+json";
 	public static final String MIME_TYPE_PLAIN_TEXT = "text/plain";
 	public static final String HEADER_CACHE_CONTROL = "Cache-Control";
-	public static final String HEADER_CACHE_CONTROL_VAL = "private";
+	public static final String CACHE_CONTROL_VALUE = "private";
 	public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
-	public static final String HEADER_CONTENT_DISPOSITION_VAL = "inline; filename=hosting.ics";
+	public static final String CONTENT_DISPOSITION_VALUE = "inline; filename=hosting.ics";
 
 	private static Properties properties = loadProperties();
 
@@ -51,7 +51,7 @@ public class APIGatewayProxyHandler {
 		LambdaLogger logger = context.getLogger();
 		logger.log("** received request : " + request);
 
-		if (StringUtils.equals(request.getPath(), HEALTH_URI) ||
+		if (StringUtils.equals(request.getPath(), HEALTH_URI) || 
 				StringUtils.equals(request.getPath(), BLANK_URI)) {
 			APIGatewayProxyResponseEvent response = createHealthResponse();
 			logger.log("health check: " + response);
@@ -66,8 +66,8 @@ public class APIGatewayProxyHandler {
 				type = request.getPathParameters().get(TYPE_PATH_PARAM);
 			}
 			type = (type == null) ? "(unknown)" : type;
-	        logger.log("received type : " + type);
-	        
+			logger.log("received type : " + type);
+
 			strResults = iCalRelay.getICalRelay(type);
 
 		} catch (IllegalArgumentException iae) {
@@ -87,11 +87,11 @@ public class APIGatewayProxyHandler {
 	}
 
 	private APIGatewayProxyResponseEvent createHealthResponse() {
-		String body = properties.getProperty("application.name") + "\n" +
-				properties.getProperty("application.description") + "\n" +
-				"Version: " + properties.getProperty("application.version") + "\n" +
-				"Build: " + properties.getProperty("build.timestamp") + "\n\n" +
-				"Health: OK\n";
+		String body = properties.getProperty("application.name") + "\n"
+				+ properties.getProperty("application.description") + "\n" 
+				+ "Version: " + properties.getProperty("application.version") + "\n" 
+				+ "Build: " + properties.getProperty("build.timestamp") + "\n\n" 
+				+ "Health: OK\n";
 		return createResponse(HttpURLConnection.HTTP_OK, MIME_TYPE_PLAIN_TEXT, body);
 	}
 
@@ -104,8 +104,8 @@ public class APIGatewayProxyHandler {
 		Map<String, String> headers = new HashMap<>();
 		headers.put(HEADER_CONTENT_TYPE, mimeType);
 		if (mimeType.equals(MIME_TYPE_CALENDAR)) {
-			headers.put(HEADER_CACHE_CONTROL, HEADER_CACHE_CONTROL_VAL);
-			headers.put(HEADER_CONTENT_DISPOSITION, HEADER_CONTENT_DISPOSITION_VAL);
+			headers.put(HEADER_CACHE_CONTROL, CACHE_CONTROL_VALUE);
+			headers.put(HEADER_CONTENT_DISPOSITION, CONTENT_DISPOSITION_VALUE);
 		}
 
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();

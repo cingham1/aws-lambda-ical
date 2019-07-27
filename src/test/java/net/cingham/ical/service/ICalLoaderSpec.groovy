@@ -22,27 +22,27 @@ import net.cingham.ical.service.ICalLoader
 
 class ICalLoaderSpec extends Specification {
 
-    @Subject
-    private ICalLoader iCalLoader
-	
-	static final String TYPE_MISTERBANDB = "misterbandb"
-	
-    def setup() {		
-		iCalLoader = new ICalLoader();
-    }
+	@Subject
+	private ICalLoader iCalLoader
 
-    def "integration test loading a live site"() {
-        given:
+	static final String TYPE_MISTERBANDB = "misterbandb"
+
+	def setup() {
+		iCalLoader = new ICalLoader();
+	}
+
+	def "integration test loading a live site"() {
+		given:
 			SiteMap siteMap = new SiteMap();
 			siteMap.loadSiteData();
 			SiteInfo siteInfo = siteMap.get(TYPE_MISTERBANDB);
-        when:
-            String result = iCalLoader.loadICalData(siteInfo)
-        then:
+		when:
+			String result = iCalLoader.loadICalData(siteInfo)
+		then:
 			StringUtils.countMatches(result, "PRODID:-//Misterb&b") == 1
 			StringUtils.countMatches(result, "BEGIN:VEVENT") > 2
-    }
-	
+	}
+
 	def "integration test trying to load invalid url"() {
 		given:
 			SiteInfo siteInfo = new SiteInfo()
@@ -52,5 +52,4 @@ class ICalLoaderSpec extends Specification {
 		then:
 			thrown IOException
 	}
-
 }

@@ -22,37 +22,37 @@ import net.cingham.ical.service.ICalRetrievalHandler
 
 class ICalHostingRelaySpec extends Specification {
 
-    @Subject
-    ICalHostingRelay icalHostingRelay;
-	
+	@Subject
+	ICalHostingRelay icalHostingRelay;
+
 	String sampleData;
 	static final String TYPE_MISTERBANDB = "misterbandb"
-	
-    def setup() {
-        icalHostingRelay = new ICalHostingRelay();		
-		sampleData = IOUtils.toString(this.getClass().getResourceAsStream("/ical/sample-mrbnb.ical"), 
-			StandardCharsets.UTF_8);
-		
+
+	def setup() {
+		icalHostingRelay = new ICalHostingRelay();
+		sampleData = IOUtils.toString(this.getClass().getResourceAsStream("/ical/sample-mrbnb.ical"),
+				StandardCharsets.UTF_8);
+
 		ICalLoader loader = Mock(ICalLoader)
 		loader.loadICalData(_) >> sampleData
-		ICalRetrievalHandler.icalLoader = loader		
-    }
+		ICalRetrievalHandler.icalLoader = loader
+	}
 
-    def "test loading and filtering 1 site"() {
-        given:
-        when:
-            String result = icalHostingRelay.getICalRelay(TYPE_MISTERBANDB)
-        then:
+	def "test loading and filtering 1 site"() {
+		given:
+		when:
+			String result = icalHostingRelay.getICalRelay(TYPE_MISTERBANDB)
+		then:
 			StringUtils.countMatches(result, "Gregory") == 1
 			StringUtils.countMatches(result, "BEGIN:VEVENT") == 3
 			!result.startsWith("Error")
-    }
-	
-    def "test loading and filtering all sites"() {
-        given:
-        when:
-            String result = icalHostingRelay.getICalRelay(ICalHostingRelay.TYPE_ALL)
-        then:
+	}
+
+	def "test loading and filtering all sites"() {
+		given:
+		when:
+			String result = icalHostingRelay.getICalRelay(ICalHostingRelay.TYPE_ALL)
+		then:
 			StringUtils.countMatches(result, "Combined Calendars") == 1
 			StringUtils.countMatches(result, "Gregory") == 5
 			StringUtils.countMatches(result, "BEGIN:VEVENT") > 10
@@ -60,14 +60,13 @@ class ICalHostingRelaySpec extends Specification {
 			StringUtils.countMatches(result, "hom-") >= 3
 			StringUtils.countMatches(result, "mrb-") >= 3
 			!result.startsWith("Error")
-    }
-	
-    def "test loading invalid site name"() {
-        given:
-        when:
-            String result = icalHostingRelay.getICalRelay("foo")
-        then:
+	}
+
+	def "test loading invalid site name"() {
+		given:
+		when:
+			String result = icalHostingRelay.getICalRelay("foo")
+		then:
 			thrown IllegalArgumentException
-    }
-	
+	}
 }

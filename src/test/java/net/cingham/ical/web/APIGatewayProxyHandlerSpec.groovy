@@ -22,40 +22,40 @@ import net.cingham.ical.web.APIGatewayProxyHandler
 
 class APIGatewayProxyHandlerSpec extends Specification {
 
-    @Subject
-    APIGatewayProxyHandler apiGatewayProxyHandler;
-	
+	@Subject
+	APIGatewayProxyHandler apiGatewayProxyHandler;
+
 	ICalHostingRelay iCalRelay
 	APIGatewayProxyRequestEvent request
 	Context context
-	
+
 	private static final String testBody = "test body";
-	
-    def setup() {
-        apiGatewayProxyHandler = new APIGatewayProxyHandler();
-		
+
+	def setup() {
+		apiGatewayProxyHandler = new APIGatewayProxyHandler();
+
 		iCalRelay = Mock(ICalHostingRelay)
 		apiGatewayProxyHandler.iCalRelay = iCalRelay
-		
+
 		request = Mock(APIGatewayProxyRequestEvent)
 		request.getResource() >> "airbnb"
 
 		context = Mock(Context);
 		LambdaLogger logger = Mock(LambdaLogger)
-		context.getLogger() >> logger	
-    }
+		context.getLogger() >> logger
+	}
 
-    def "test loading valid site data"() {
-        given:
+	def "test loading valid site data"() {
+		given:
 			iCalRelay.getICalRelay(_) >> testBody
-        when:
-            APIGatewayProxyResponseEvent response = 
+		when:
+			APIGatewayProxyResponseEvent response =
 				apiGatewayProxyHandler.handleRequest(request, context)
-        then:
+		then:
 			response.getStatusCode() == HttpURLConnection.HTTP_OK
 			response.getHeaders().get("Content-Type").equals("text/calendar; charset=utf-8")
 			response.getBody().equals(testBody)
-    }
+	}
 
 	def "test error with invalid type name"() {
 		given:
@@ -94,5 +94,4 @@ class APIGatewayProxyHandlerSpec extends Specification {
 			response.getHeaders().get("Content-Type").equals("text/plain")
 			response.getBody().contains("OK")
 	}
-
 }
