@@ -25,14 +25,14 @@ Provide a REST API which will normalize the feed data from each site, and option
 
 ## Architecture
 
-This project is designed to be run as an [AWS Lambda](https://aws.amazon.com/lambda/) function, using a REST API endpoint for data retrieval.  
+This project is designed to be run as an [AWS Lambda](https://aws.amazon.com/lambda/) function, using an [AWS API Gateway](https://aws.amazon.com/api-gateway/) for the data retrieval REST endpoint.  
 
-An ICal client (such as the calendar app on your smartphone) periodically makes requests via a REST API URL for the latest booking data.  The request is routed to the Lambda function which then retrieves the data from the requested hosting site(s) and massages the data according to the rules designated for each site.  The rules are defined in the properties file ical-sites.yml.  The resulting ICal events are collated and returned to the client as an ICal mime-type.
+An ICal client (such as the calendar app on your smartphone) periodically makes requests via a REST API URL for the latest booking event data.  The request is routed to the Lambda function which then retrieves the data from the requested hosting site(s) and massages the data according to the rules designated for each site.  The rules are defined in the properties file ical-sites.yml.  The resulting ICal events are collated and returned to the client as an ICal mime-type.
 
 ![Architecture Diagram](https://raw.githubusercontent.com/cingham1/aws-lambda-ical/master/src/main/resources/ical-architecture-diagram.jpg)
 
 #### REST API
-The request URL can be for an individual site (such as AirBnb) or all defined sites collated into one response.  The examples below assume DNS (for ical.cingham.net) and API Gateway (for /hosting-relay/{type}) are setup.  The available {type} values are the sites listed in ical-sites.yml, or "all" to gather all of them.
+The request URL can be for an individual site (such as AirBnb) or all defined sites collated into one response.  The examples below assume DNS (for ical.cingham.net) and AWS API Gateway (for /hosting-relay/{type}) are setup.  The available {type} values are the sites listed in ical-sites.yml, or "all" to gather all of them.
 
 Example URL for HomeAway data only
 
@@ -53,14 +53,14 @@ HTTP GET:  https://ical.cingham.net/hosting-relay/all
 * Body: `<data feed text file in ical format>`
 
 **Error response:**
-* Status: HTTP 400 Bad Request  or  500 Internal Error
+* Status: HTTP 400 Bad Request, or 500 Internal Error
 * Headers: 
     * Content-Type: application/problem+json
 * Body: `{ "status":<status code>, "message":<error description> }`
 
 ## Build & Deploy
 
-This project is built with Java 8 using Maven, and deployed onto Amazon AWS Lambda.
+This project is built with Java 8 using Maven 3, and deployed onto Amazon AWS Lambda.
 
 #### Running the tests
 
@@ -85,7 +85,7 @@ The enclosed shell script *buildit.sh* will do the same thing
 An AWS account is required.  From the AWS console do the following:
 
 * Create a Lambda function for Java 8 with a name such as "iCalHostingRelay" and upload the built .jar file
-* Create an API Gateway for a resource URI such as "/host-api/{type}", 
+* Create an API Gateway for a resource URI such as "/hosting-relay/{type}", 
 * In the new API resource URI create a GET method and point it to the Lambda function defined above
 * Optionally use Route 53 for a custom domain for the final URL, and point it to the API Gateway url
 
@@ -102,12 +102,13 @@ An AWS account is required.  From the AWS console do the following:
 ## References 
 
 * [ICal Format Overview](https://en.wikipedia.org/wiki/ICalendar) - wikipedia.org
-* [ICal Detailed Spec - RFC 2445](https://www.ietf.org/rfc/rfc2445.txt) - ietf.org
+* [ICal Detailed Spec - RFC 5545](https://tools.ietf.org/html/rfc5545) - ietf.org
 
 #### Built With
 
 * [Eclipse](https://www.eclipse.org/) - IDE
 * [Maven](https://maven.apache.org/) - Dependency Management
+* [biweekly ICalendar](https://github.com/mangstadt/biweekly) - Java library to manipulate ICal data
 * [AWS Lambda](https://aws.amazon.com/lambda/) - Amazon Web Services - Lambda
 
 
